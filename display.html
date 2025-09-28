@@ -213,7 +213,7 @@
             const PIN_SIZE = 10; // Tamaño de la clavija (radio exterior)
             const PIN_COLOR = '#1e90ff'; // Color de la clavija (Dodger Blue)
             const TOTAL_MARGIN = 20; 
-            const CENTER_CIRCLE_RADIUS = 50; // *** NUEVA CONSTANTE: Radio del círculo central (Ajustar si es necesario) ***
+            const CENTER_CIRCLE_RADIUS = 60; // Radio del doble de tamaño
             const CENTER_CIRCLE_COLOR = PIN_COLOR; // Usamos el mismo azul
 
             // Variables para la animación del puntero
@@ -299,7 +299,7 @@
 
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
                 
-                // --- Dibujo de la Ruleta (Segmentos y Texto) ---
+                // --- DIBUJO DE LA RULETA (Segmentos y Texto) - CON ROTACIÓN ---
                 ctx.save();
                 ctx.translate(centerX, centerY);
                 ctx.rotate(currentRotation * Math.PI / 180);
@@ -370,20 +370,37 @@
                     ctx.restore();
                 });
 
-                // --- MODIFICACIÓN AQUÍ: Dibuja el círculo central azul ---
+                ctx.restore(); // <-- RESTAURA Y FINALIZA LA ROTACIÓN
+
+                // --- DIBUJO DEL CÍRCULO CENTRAL - SIN ROTACIÓN, CON EFECTO 3D (OPTIMIZADO) ---
+                ctx.save();
+                
+                // 1. Configuración de la Sombra OPTIMIZADA
+                ctx.shadowColor = 'rgba(0, 0, 0, 0.8)'; 
+                ctx.shadowBlur = 10; 
+                ctx.shadowOffsetX = 0;
+                ctx.shadowOffsetY = 4; 
+
+                // 2. Dibuja el círculo en la posición central fija (centerX, centerY)
                 ctx.beginPath();
-                ctx.arc(0, 0, CENTER_CIRCLE_RADIUS, 0, Math.PI * 2);
+                ctx.arc(centerX, centerY, CENTER_CIRCLE_RADIUS, 0, Math.PI * 2);
                 ctx.fillStyle = CENTER_CIRCLE_COLOR; // Relleno azul
                 ctx.fill();
                 
-                // Opcional: Borde blanco alrededor del círculo central
+                // 3. Desactiva la sombra para dibujar el borde blanco limpio
+                ctx.shadowColor = 'transparent';
+                ctx.shadowBlur = 0;
+                ctx.shadowOffsetX = 0;
+                ctx.shadowOffsetY = 0;
+
+                // 4. Dibuja el borde
                 ctx.strokeStyle = '#fff';
                 ctx.lineWidth = 3;
                 ctx.stroke();
 
                 ctx.restore(); 
-                // --- FIN DE MODIFICACIÓN ---
-
+                // --- FIN CÍRCULO CENTRAL 3D ---
+                
                 // Dibuja el confeti si está activo
                 drawConfetti();
                 
@@ -511,8 +528,11 @@
                 // --- Lógica de Frenado Acelerado ---
                 const diff = targetRotation - currentRotation;
                 
+                // Mantiene el mismo criterio de finalización para la animación fluida
                 if (Math.abs(diff) < 0.1) {
-                    currentRotation = targetRotation;
+                    // *** CORRECCIÓN CRÍTICA: Asegura la posición exacta al finalizar ***
+                    currentRotation = targetRotation; 
+                    
                     drawRoulette();
                     cancelAnimationFrame(animationId);
                     
@@ -538,7 +558,7 @@
                     return;
                 }
 
-                const decelerationFactor = 0.08; 
+                const decelerationFactor = 0.04; 
                 currentRotation += diff * decelerationFactor;
                 // --- FIN Lógica de Frenado ---
 
@@ -612,19 +632,34 @@
                     return;
                 }
 
-                const vueltas = Math.floor(Math.random() * 6) + 6; 
+                // Giros aleatorios entre 6 y 12 vueltas (inclusive)
+                const vueltas = Math.floor(Math.random() * 7) + 6; 
                 const gradosVueltas = vueltas * 360;
 
                 const randomAngle = Math.random() * 360;
                 const segmentAngleInDegrees = 360 / participants.length;
                 const finalSegmentIndex = Math.floor(randomAngle / segmentAngleInDegrees);
                 
-                // Calcula la rotación para que el CENTRO DEL SEGMENTO caiga en el puntero (0 grados).
+                // Calcula el ángulo para que el CENTRO del segmento ganador caiga en el puntero (0 grados).
                 const angleToCenterOfWinnerSegment = finalSegmentIndex * segmentAngleInDegrees + segmentAngleInDegrees / 2;
                 
+                // La rotación necesaria para llevar ese ángulo al puntero (que está en 0º)
                 const rotationNeeded = 360 - angleToCenterOfWinnerSegment;
 
-                targetRotation = currentRotation + gradosVueltas + rotationNeeded;
+                // *** CORRECCIÓN CRÍTICA: La rotación objetivo debe basarse en el giro más el ajuste, y no en la rotación actual ***
+                // Al normalizar la rotación actual a [0, 360] antes de calcular la diferencia total.
+                const currentRotationNormalized = currentRotation % 360; 
+                
+                // Calcular la diferencia angular (cuánto tiene que girar DESDE SU POSICIÓN ACTUAL para llegar al punto de parada)
+                let angleDifference = (rotationNeeded - currentRotationNormalized + 360) % 360;
+                
+                // Si la diferencia es 0, no giraría el último segmento, por lo que le añadimos un giro extra.
+                if (angleDifference === 0) {
+                    angleDifference = 360;
+                }
+
+                // El target final es la rotación actual MÁS las vueltas completas MÁS la rotación necesaria.
+                targetRotation = currentRotation + gradosVueltas + angleDifference;
 
                 if (animationId) {
                     cancelAnimationFrame(animationId);
@@ -672,4 +707,3 @@
     </script>
 </body>
 </html>
-
