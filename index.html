@@ -262,16 +262,44 @@
 
             // --- Carga y Sincronización ---
 
-            function loadSettings() {
-                const savedAllowRepeat = localStorage.getItem('raffleAllowRepeat');
-                if (savedAllowRepeat) {
-                    allowRepeatCheckbox.checked = savedAllowRepeat === 'true';
+            function loadGithubLists(url, isAutoLoad = false) {
+                if (!url) {
+                    if (!isAutoLoad) {
+                        showStatus('Por favor, introduce una URL válida de GitHub.', 'error');
+                    }
+                    return;
                 }
-                const savedUrl = localStorage.getItem('githubUrl');
-                if (savedUrl) {
-                    githubUrlInput.value = savedUrl;
-                }
-                loadSavedLists();
+                
+                localStorage.setItem('githubUrl', url);
+                
+                fetch(url)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Error al cargar la URL. Verifica la URL RAW del archivo.');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        if (typeof data === 'object' && Object.keys(data).length > 0) {
+                            allLists = data;
+                            localStorage.setItem('raffleAllLists', JSON.stringify(allLists));
+                            updateListSelector();
+                            loadList(Object.keys(allLists)[0]);
+                            if (!isAutoLoad) {
+                                showStatus(`¡Listas cargadas exitosamente desde GitHub! ${Object.keys(data).length} listas encontradas.`, 'success');
+                            }
+                        } else {
+                            if (!isAutoLoad) {
+                                showStatus('El archivo cargado está vacío o no tiene el formato JSON de listas esperado.', 'error');
+                            }
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Fetch error:', error);
+                        if (!isAutoLoad) {
+                            showStatus(`Error de carga: ${error.message}`, 'error');
+                        }
+                    });
             }
 
             function loadSavedLists() {
@@ -328,6 +356,20 @@
                     participantsTextarea.value = '';
                     updateParticipantsCount();
                 }
+            }
+
+            function loadSettings() {
+                const savedAllowRepeat = localStorage.getItem('raffleAllowRepeat');
+                if (savedAllowRepeat) {
+                    allowRepeatCheckbox.checked = savedAllowRepeat === 'true';
+                }
+                const savedUrl = localStorage.getItem('githubUrl');
+                if (savedUrl) {
+                    githubUrlInput.value = savedUrl;
+                    // *** LLAMADA AUTOMÁTICA AL CARGAR LA PÁGINA SI HAY URL GUARDADA ***
+                    loadGithubLists(savedUrl, true);
+                }
+                loadSavedLists();
             }
 
             // --- Event Listeners ---
@@ -398,35 +440,7 @@
 
             loadGithubBtn.addEventListener('click', function() {
                 const url = githubUrlInput.value.trim();
-                if (!url) {
-                    showStatus('Por favor, introduce una URL válida de GitHub.', 'error');
-                    return;
-                }
-                
-                localStorage.setItem('githubUrl', url);
-                
-                fetch(url)
-                    .then(response => {
-                        if (!response.ok) {
-                            throw new Error('Error al cargar la URL. Verifica la URL RAW del archivo.');
-                        }
-                        return response.json();
-                    })
-                    .then(data => {
-                        if (typeof data === 'object' && Object.keys(data).length > 0) {
-                            allLists = data;
-                            localStorage.setItem('raffleAllLists', JSON.stringify(allLists));
-                            updateListSelector();
-                            loadList(Object.keys(allLists)[0]);
-                            showStatus(`¡Listas cargadas exitosamente desde GitHub! ${Object.keys(data).length} listas encontradas.`, 'success');
-                        } else {
-                            showStatus('El archivo cargado está vacío o no tiene el formato JSON de listas esperado.', 'error');
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Fetch error:', error);
-                        showStatus(`Error de carga: ${error.message}`, 'error');
-                    });
+                loadGithubLists(url, false);
             });
 
             downloadJsonBtn.addEventListener('click', function() {
@@ -453,8 +467,10 @@
 
             resetWinnersBtn.addEventListener('click', function() {
                 if (confirm('¿Estás seguro de que quieres limpiar la lista de ganadores y restablecer el sorteo?')) {
+                    // Borrar ganadores
                     localStorage.removeItem('raffleWinners');
-                    localStorage.removeItem('raffleParticipants'); // Esto forzará a la pantalla del sorteo a recargar la lista activa.
+                    // Borrar participantes para forzar a la pantalla de sorteo a recargar la lista activa.
+                    localStorage.removeItem('raffleParticipants'); 
                     showStatus('Ganadores y lista de participantes limpiados. Recarga la pantalla de sorteo.', 'success');
                 }
             });
