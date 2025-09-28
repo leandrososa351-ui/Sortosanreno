@@ -170,7 +170,7 @@
         <div class="sync-info">
             <h2>🔗 Sincronización con GitHub</h2>
             <p>**Paso 1: URL de Sincronización**</p>
-            <p>Introduce la URL RAW de tu archivo JSON (e.g., `https://raw.githubusercontent.com/usuario/repo/branch/lists.json`):</p>
+            <p>Introduce la **URL RAW** de tu archivo JSON (e.g., `https://raw.githubusercontent.com/usuario/repo/branch/lists.json`):</p>
             <div class="controls-row">
                 <input type="text" id="github-url" placeholder="URL Raw de GitHub Gist o Archivo JSON">
                 <button id="load-github-btn">Cargar</button>
@@ -241,8 +241,12 @@
             const loadGithubBtn = document.getElementById('load-github-btn');
             const downloadJsonBtn = document.getElementById('download-json-btn');
 
-            let allLists = {}; // Estructura: { 'nombreLista': ['Participante A', 'Participante B'] }
+            let allLists = {};
             const DEFAULT_LIST_NAME = 'Lista Principal';
+            
+            // --- URL PREDETERMINADA DEL USUARIO ---
+            const DEFAULT_GITHUB_URL = 'https://leandrososa351-ui.github.io/Sortosanreno/list.json'; 
+            // ---------------------------------------
 
             // --- Funciones de Utilidad ---
 
@@ -252,7 +256,7 @@
                 setTimeout(() => {
                     statusDiv.textContent = '';
                     statusDiv.className = 'status';
-                }, 5000);
+                }, 8000);
             }
 
             function updateParticipantsCount() {
@@ -262,7 +266,7 @@
 
             // --- Carga y Sincronización ---
 
-            function loadGithubLists(url, isAutoLoad = false) {
+            async function loadGithubLists(url, isAutoLoad = false) {
                 if (!url) {
                     if (!isAutoLoad) {
                         showStatus('Por favor, introduce una URL válida de GitHub.', 'error');
@@ -272,34 +276,45 @@
                 
                 localStorage.setItem('githubUrl', url);
                 
-                fetch(url)
-                    .then(response => {
-                        if (!response.ok) {
-                            throw new Error('Error al cargar la URL. Verifica la URL RAW del archivo.');
+                try {
+                    const response = await fetch(url);
+
+                    if (!response.ok) {
+                        if (response.status === 404) {
+                            throw new Error('Archivo no encontrado (404). Verifica que la URL sea correcta.');
                         }
-                        return response.json();
-                    })
-                    .then(data => {
-                        if (typeof data === 'object' && Object.keys(data).length > 0) {
-                            allLists = data;
-                            localStorage.setItem('raffleAllLists', JSON.stringify(allLists));
-                            updateListSelector();
-                            loadList(Object.keys(allLists)[0]);
-                            if (!isAutoLoad) {
-                                showStatus(`¡Listas cargadas exitosamente desde GitHub! ${Object.keys(data).length} listas encontradas.`, 'success');
-                            }
-                        } else {
-                            if (!isAutoLoad) {
-                                showStatus('El archivo cargado está vacío o no tiene el formato JSON de listas esperado.', 'error');
-                            }
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Fetch error:', error);
+                        throw new Error(`Error de red o CORS (Estado: ${response.status}). Intenta otra URL o revisa permisos.`);
+                    }
+
+                    const textData = await response.text();
+                    let data;
+                    try {
+                        data = JSON.parse(textData);
+                    } catch (e) {
+                        throw new Error('El archivo cargado no es un JSON válido o tiene un formato incorrecto.');
+                    }
+                    
+
+                    if (typeof data === 'object' && Object.keys(data).length > 0) {
+                        allLists = data;
+                        localStorage.setItem('raffleAllLists', JSON.stringify(allLists));
+                        updateListSelector();
+                        loadList(Object.keys(allLists)[0]);
                         if (!isAutoLoad) {
-                            showStatus(`Error de carga: ${error.message}`, 'error');
+                            showStatus(`¡Listas cargadas exitosamente desde GitHub! ${Object.keys(data).length} listas encontradas.`, 'success');
+                        } else {
+                            // Mensaje más discreto para carga automática
+                            console.log(`Carga automática exitosa desde: ${url}`);
                         }
-                    });
+                    } else {
+                        throw new Error('El archivo JSON está vacío o no contiene listas.');
+                    }
+                } catch (error) {
+                    console.error('Fetch error:', error);
+                    if (!isAutoLoad) {
+                         showStatus(`Error de Carga de GitHub: ${error.message}. Se cargó la lista guardada localmente.`, 'error');
+                    }
+                }
             }
 
             function loadSavedLists() {
@@ -308,7 +323,7 @@
                     try {
                         allLists = JSON.parse(savedLists);
                         if (Object.keys(allLists).length === 0) {
-                            allLists[DEFAULT_LIST_NAME] = [];
+                            allLists = { [DEFAULT_LIST_NAME]: [] };
                         }
                     } catch (e) {
                         console.error('Error al parsear listas:', e);
@@ -363,13 +378,23 @@
                 if (savedAllowRepeat) {
                     allowRepeatCheckbox.checked = savedAllowRepeat === 'true';
                 }
-                const savedUrl = localStorage.getItem('githubUrl');
-                if (savedUrl) {
-                    githubUrlInput.value = savedUrl;
-                    // *** LLAMADA AUTOMÁTICA AL CARGAR LA PÁGINA SI HAY URL GUARDADA ***
-                    loadGithubLists(savedUrl, true);
+                
+                // 1. Determinar la URL a usar: la guardada o la predeterminada
+                let savedUrl = localStorage.getItem('githubUrl');
+
+                if (!savedUrl) {
+                    // Si no hay URL guardada, usamos la predeterminada del usuario
+                    savedUrl = DEFAULT_GITHUB_URL;
+                    localStorage.setItem('githubUrl', savedUrl);
                 }
+                
+                githubUrlInput.value = savedUrl; // Mostrar la URL en el input
+
+                // 2. Cargamos las listas guardadas localmente (fallback)
                 loadSavedLists();
+                
+                // 3. Intentamos cargar desde la fuente de GitHub automáticamente
+                loadGithubLists(savedUrl, true);
             }
 
             // --- Event Listeners ---
@@ -392,12 +417,12 @@
                 allLists[listName] = participantsArray;
                 localStorage.setItem('raffleAllLists', JSON.stringify(allLists));
                 localStorage.setItem('activeListName', listName);
-                newListInput.value = ''; // Limpiar el input después de guardar
+                newListInput.value = '';
                 
                 updateListSelector();
-                loadList(listName); // Recargar para asegurar que la lista activa esté bien.
+                loadList(listName);
 
-                showStatus(`Lista "${listName}" guardada con ${participantsArray.length} participantes.`);
+                showStatus(`Lista "${listName}" guardada con ${participantsArray.length} participantes (localmente). ¡Descarga el JSON para sincronizar!`);
             });
 
             deleteListBtn.addEventListener('click', function() {
@@ -424,12 +449,10 @@
                     return;
                 }
 
-                // Guardar la lista activa actual para persistencia local.
                 const activeListName = listSelector.value;
                 allLists[activeListName] = participantsArray;
                 localStorage.setItem('raffleAllLists', JSON.stringify(allLists));
 
-                // Configurar la lista que usará la pantalla del sorteo.
                 localStorage.setItem('raffleParticipants', JSON.stringify(participantsArray));
                 localStorage.setItem('raffleAllowRepeat', allowRepeatCheckbox.checked);
                 
@@ -467,9 +490,7 @@
 
             resetWinnersBtn.addEventListener('click', function() {
                 if (confirm('¿Estás seguro de que quieres limpiar la lista de ganadores y restablecer el sorteo?')) {
-                    // Borrar ganadores
                     localStorage.removeItem('raffleWinners');
-                    // Borrar participantes para forzar a la pantalla de sorteo a recargar la lista activa.
                     localStorage.removeItem('raffleParticipants'); 
                     showStatus('Ganadores y lista de participantes limpiados. Recarga la pantalla de sorteo.', 'success');
                 }
@@ -481,3 +502,4 @@
     </script>
 </body>
 </html>
+
