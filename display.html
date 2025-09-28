@@ -1,5 +1,3 @@
-
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -214,8 +212,9 @@
             // Constantes para la clavija (pin) y puntero
             const PIN_SIZE = 10; // Tamaño de la clavija (radio exterior)
             const PIN_COLOR = '#1e90ff'; // Color de la clavija (Dodger Blue)
-            // *** MODIFICADO: Reducido de 40 a 20 para hacer la ruleta más grande ***
             const TOTAL_MARGIN = 20; 
+            const CENTER_CIRCLE_RADIUS = 50; // *** NUEVA CONSTANTE: Radio del círculo central (Ajustar si es necesario) ***
+            const CENTER_CIRCLE_COLOR = PIN_COLOR; // Usamos el mismo azul
 
             // Variables para la animación del puntero
             let pointerRotation = 0; // Rotación actual del puntero (0 = normal)
@@ -223,9 +222,7 @@
             const ROTATION_SPRING = 0.05; // Factor de "resorte" (velocidad de retorno)
             
             // Constantes para el puntero
-            // *** MODIFICADO: Reducido de 40 a 30 ***
             const POINTER_WIDTH = 30; 
-            // *** MODIFICADO: Reducido de 50 a 40 ***
             const POINTER_HEIGHT = 40; 
 
             function playClickSound() {
@@ -298,7 +295,6 @@
                 const centerX = canvas.width / 2;
                 const centerY = canvas.height / 2;
                 // Radio ajustado para el margen
-                // Este radio es ahora más grande debido a la reducción de TOTAL_MARGIN
                 const radius = Math.min(centerX, centerY) - TOTAL_MARGIN; 
 
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -374,13 +370,19 @@
                     ctx.restore();
                 });
 
-                // Dibuja el círculo central
+                // --- MODIFICACIÓN AQUÍ: Dibuja el círculo central azul ---
                 ctx.beginPath();
-                ctx.arc(0, 0, 20, 0, Math.PI * 2);
-                ctx.fillStyle = '#fff';
+                ctx.arc(0, 0, CENTER_CIRCLE_RADIUS, 0, Math.PI * 2);
+                ctx.fillStyle = CENTER_CIRCLE_COLOR; // Relleno azul
                 ctx.fill();
+                
+                // Opcional: Borde blanco alrededor del círculo central
+                ctx.strokeStyle = '#fff';
+                ctx.lineWidth = 3;
+                ctx.stroke();
 
                 ctx.restore(); 
+                // --- FIN DE MODIFICACIÓN ---
 
                 // Dibuja el confeti si está activo
                 drawConfetti();
@@ -670,3 +672,4 @@
     </script>
 </body>
 </html>
+
