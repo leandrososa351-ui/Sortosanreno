@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pantalla de Sorteo</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background: transparent;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: white;
+            position: relative;
+            min-height: 100vh;
+        }
+
+        .winners-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 480px;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .winners-title {
+            font-size: 36px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            /* Sombra de texto del título */
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7); 
+            color: #fdbb2d;
+            /* EFECTO 3D de caja */
+            padding: 10px 20px;
+            background: rgba(0, 0, 0, 0.2); 
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.7); 
+        }
+
+        .winners-list {
+            width: 100%;
+            max-height: calc(100% - 80px);
+            overflow-y: scroll;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            scrollbar-width: none;
+        }
+        
+        .winners-list::-webkit-scrollbar {
+            display: none;
+        }
+
+        .winner-item {
+            background: white;
+            /* Consistencia con el ganador final */
+            padding: 10px 40px; 
+            margin: 8px 0;
+            border-radius: 20px;
+            font-size: 32px; 
+            font-weight: bold; 
+            text-align: center; 
+            min-width: 80%;
+            opacity: 0;
+            transform: translateY(-20px);
+            transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out; 
+            color: blue; 
+            
+            /* Sombra de texto para el efecto 3D */
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7); 
+            
+            /* EFECTO 3D PRONUNCIADO (Sombra de caja) */
+            box-shadow: 
+                0 10px 20px rgba(0, 0, 0, 0.8), 
+                inset 0 0 10px rgba(0, 0, 0, 0.3); 
+        }
+
+        .winner-item.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .main-raffle-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .current-winner {
+            text-align: center;
+            font-size: 54px;
+            font-weight: bold;
+            color: #fffa65;
+            /* Sombra de texto base */
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+            z-index: 10;
+            padding: 10px 20px;
+            background: transparent;
+            border-radius: 20px;
+            transition: background-color 0.5s ease, color 0.5s ease, padding 0.5s ease;
+            white-space: nowrap;
+            min-height: 80px;
+            /* Sombra de caja (para cuando no tiene fondo) */
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5); 
+        }
+        
+        .canvas-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        #rouletteCanvas {
+            max-width: 90%;
+            max-height: 90%;
+            border-radius: 50%;
+            
+            /* Borde solicitado (color del selector) */
+            border: 10px solid #1e90ff; 
+
+            /* EFECTO 3D: Sombra de caja para la Ruleta */
+            box-shadow: 
+                inset 0 0 15px rgba(0, 0, 0, 0.5), 
+                0 15px 30px rgba(0, 0, 0, 0.7); 
+        }
+
+        .participants-count {
+            background: white;
+            color: blue;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-size: 18px;
+            font-weight: bold;
+            z-index: 10;
+            margin-top: 5px;
+            /* EFECTO 3D: Sombra de caja */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5); 
+        }
+
+        .current-winner.winner-final {
+            background-color: white;
+            color: blue;
+            /* Consistencia de padding */
+            padding: 10px 40px;
+            /* Sombra final, idéntica a los items de la lista */
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.8), 
+                        inset 0 0 10px rgba(0, 0, 0, 0.3); 
+            /* La sombra de texto es heredada de .current-winner */
+        }
+    </style>
+</head>
+<body>
+    <div class="winners-container">
+        <div class="winners-title">🏆 GANADORES</div>
+        <div class="winners-list" id="winners-list"></div>
+    </div>
+
+    <div class="main-raffle-content">
+        <div class="current-winner" id="current-winner"></div>
+        <div class="canvas-container">
+            <canvas id="rouletteCanvas"></canvas>
+        </div>
+        <div class="participants-count" id="participants-count">Participantes: 0</div>
+    </div>
+
+    <audio id="winnerSound" src="bites-ta-da-winner.mp3" preload="auto"></audio> 
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const winnersList = document.getElementById('winners-list');
+            const currentWinnerDiv = document.getElementById('current-winner');
+            const participantsCountDiv = document.getElementById('participants-count');
+            const canvas = document.getElementById('rouletteCanvas');
+            const ctx = canvas.getContext('2d');
+            const winnerSound = document.getElementById('winnerSound');
+
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+
+            let participants = [];
+            let winners = [];
+            let allowRepeat = false;
+            let isSpinning = false;
+            let currentRotation = 0;
+            let targetRotation = 0;
+            let animationId = null;
+            let lastSegmentIndex = -1;
+            const MAX_PARTICIPANTS = 300;
+            
+            let previousWinner = null;
+            let isSlowSpin = false;
+            
+            // Confeti
+            let confetti = [];
+            const NUM_CONFETTI = 200;
+            const CONFETTI_COLORS = ['#f44336', '#e91e63', '#9c27b0', '#673ab7', '#3f51b5', '#2196f3', '#03a9f4', '#00bcd4', '#009688', '#4CAF50', '#8BC34A', '#CDDC39', '#FFEB3B', '#FFC107', '#FF9800', '#FF5722', '#795548', '#9E9E9E', '#607D8B'];
+
+
+            const colors = ['#2ed573', '#f9ca24', '#45b7d1'];
+            
+            // Constantes para la clavija (pin) y puntero
+            const PIN_SIZE = 10; // Tamaño de la clavija (radio exterior)
+            const PIN_COLOR = '#1e90ff'; // Color de la clavija (Dodger Blue)
+            // *** MODIFICADO: Reducido de 40 a 20 para hacer la ruleta más grande ***
+            const TOTAL_MARGIN = 20; 
+
+            // Variables para la animación del puntero
+            let pointerRotation = 0; // Rotación actual del puntero (0 = normal)
+            const MAX_ROTATION_MAGNITUDE = 0.3; 
+            const ROTATION_SPRING = 0.05; // Factor de "resorte" (velocidad de retorno)
+            
+            // Constantes para el puntero
+            // *** MODIFICADO: Reducido de 40 a 30 ***
+            const POINTER_WIDTH = 30; 
+            // *** MODIFICADO: Reducido de 50 a 40 ***
+            const POINTER_HEIGHT = 40; 
+
+            function playClickSound() {
+                const now = audioContext.currentTime;
+                const duration = 0.05; 
+
+                const oscillator = audioContext.createOscillator();
+                oscillator.type = 'square';
+                // --- MODIFICACIÓN: Frecuencia más baja (menos aguda) ---
+                const frequency = 600 + Math.random() * 300; 
+                oscillator.frequency.setValueAtTime(frequency, now);
+
+                const gainNode = audioContext.createGain();
+                // --- MODIFICACIÓN: Ganancia más baja (más apagada) ---
+                gainNode.gain.setValueAtTime(0.05, now);
+                gainNode.gain.exponentialRampToValueAtTime(0.0001, now + duration);
+
+                const filter = audioContext.createBiquadFilter();
+                filter.type = 'highpass';
+                // --- MODIFICACIÓN: Filtro menos agresivo (más grave) ---
+                filter.frequency.setValueAtTime(4000, now);
+
+                oscillator.connect(filter);
+                filter.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+
+                oscillator.start(now);
+                oscillator.stop(now + duration);
+            }
+
+            function setupCanvas() {
+                const container = document.querySelector('.canvas-container');
+                const size = Math.min(window.innerWidth * 1.0, window.innerHeight * 1.0, 880);
+                canvas.width = size;
+                canvas.height = size;
+                drawRoulette();
+            }
+
+            function loadParticipantsAndWinners() {
+                const savedParticipants = localStorage.getItem('raffleParticipants');
+                const savedAllowRepeat = localStorage.getItem('raffleAllowRepeat');
+                const savedWinners = localStorage.getItem('raffleWinners');
+
+                if (savedParticipants) {
+                    participants = JSON.parse(savedParticipants);
+                    participants = participants.map(name => name.toUpperCase());
+
+                    if (participants.length > MAX_PARTICIPANTS) {
+                        participants = participants.slice(0, MAX_PARTICIPANTS);
+                        localStorage.setItem('raffleParticipants', JSON.stringify(participants));
+                    }
+                    allowRepeat = savedAllowRepeat === 'true';
+                    setupCanvas();
+                    updateParticipantsCount();
+                }
+
+                if (savedWinners) {
+                    winners = JSON.parse(savedWinners);
+                    updateWinnersList();
+                }
+            }
+
+            function updateParticipantsCount() {
+                participantsCountDiv.textContent = `Participantes: ${participants.length}`;
+            }
+
+            function drawRoulette() {
+                if (!canvas.width || !canvas.height) return;
+
+                const centerX = canvas.width / 2;
+                const centerY = canvas.height / 2;
+                // Radio ajustado para el margen
+                // Este radio es ahora más grande debido a la reducción de TOTAL_MARGIN
+                const radius = Math.min(centerX, centerY) - TOTAL_MARGIN; 
+
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                // --- Dibujo de la Ruleta (Segmentos y Texto) ---
+                ctx.save();
+                ctx.translate(centerX, centerY);
+                ctx.rotate(currentRotation * Math.PI / 180);
+                
+                if (participants.length === 0) {
+                    ctx.beginPath();
+                    ctx.arc(0, 0, radius, 0, Math.PI * 2);
+                    ctx.fillStyle = '#333';
+                    ctx.fill();
+
+                    ctx.restore();
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillStyle = '#fff';
+                    ctx.font = 'bold 36px Arial';
+                    ctx.fillText('SIN PARTICIPANTES', centerX, centerY);
+
+                    drawConfetti();
+                    drawPointer(centerX, centerY);
+                    return;
+                }
+
+                const segmentAngle = (Math.PI * 2) / participants.length;
+                const maxTextWidth = (radius * Math.sin(segmentAngle / 2)) * 0.95;
+
+                participants.forEach((participant, index) => {
+                    const startAngle = index * segmentAngle;
+                    const endAngle = (index + 1) * segmentAngle;
+
+                    // Dibuja el segmento
+                    ctx.beginPath();
+                    ctx.moveTo(0, 0);
+                    ctx.arc(0, 0, radius, startAngle, endAngle);
+                    ctx.closePath();
+                    ctx.fillStyle = colors[index % colors.length];
+                    ctx.fill();
+                    ctx.strokeStyle = '#fff';
+                    ctx.lineWidth = 2;
+                    ctx.stroke();
+                    
+                    // Dibuja la clavija (pin)
+                    ctx.save();
+                    ctx.rotate(endAngle);
+                    ctx.beginPath();
+                    ctx.moveTo(radius, 0);
+                    ctx.lineTo(radius + PIN_SIZE, PIN_SIZE / 2);
+                    ctx.lineTo(radius + PIN_SIZE, -PIN_SIZE / 2);
+                    ctx.closePath();
+                    ctx.fillStyle = PIN_COLOR;
+                    ctx.fill();
+                    ctx.restore();
+                    
+                    // Dibuja el texto
+                    ctx.save();
+                    ctx.rotate(startAngle + segmentAngle / 2);
+                    ctx.textAlign = 'right';
+                    ctx.fillStyle = '#000';
+
+                    let fontSize = 60;
+                    ctx.font = `bold ${fontSize}px Arial`;
+                    // El espacio para el texto es mayor gracias al aumento de 'radius'
+                    while(ctx.measureText(participant).width > maxTextWidth && fontSize > 15) {
+                        fontSize--;
+                        ctx.font = `bold ${fontSize}px Arial`;
+                    }
+
+                    ctx.fillText(participant, radius - 15, 5);
+                    ctx.restore();
+                });
+
+                // Dibuja el círculo central
+                ctx.beginPath();
+                ctx.arc(0, 0, 20, 0, Math.PI * 2);
+                ctx.fillStyle = '#fff';
+                ctx.fill();
+
+                ctx.restore(); 
+
+                // Dibuja el confeti si está activo
+                drawConfetti();
+                
+                // Dibuja la flecha (puntero)
+                drawPointer(centerX, centerY);
+            }
+
+            function drawPointer(centerX, centerY) {
+                ctx.save();
+                
+                // Punto de pivote (extremo redondeado derecho)
+                const pivotX = canvas.width - 5; 
+                const pivotY = centerY;
+
+                // 1. Mover el origen al punto de pivote y aplicar la rotación
+                ctx.translate(pivotX, pivotY);
+                ctx.rotate(pointerRotation);
+
+                // 2. Dibujar la forma del puntero (triángulo + círculo)
+                ctx.fillStyle = '#1e90ff';
+                
+                // Dibuja el cuerpo del puntero (triángulo que apunta a la IZQUIERDA)
+                ctx.beginPath();
+                // Punta izquierda (ahora más cerca de la ruleta)
+                ctx.moveTo(-POINTER_WIDTH - 5, 0); 
+                // Parte superior de la base (en el pivote X=0)
+                ctx.lineTo(0, -POINTER_HEIGHT / 2); 
+                // Parte inferior de la base (en el pivote X=0)
+                ctx.lineTo(0, POINTER_HEIGHT / 2); 
+                ctx.closePath();
+                ctx.fill();
+                
+                // Dibujar el pivote redondeado (círculo)
+                ctx.beginPath();
+                // Dibuja la parte redondeada hacia la derecha (pivote)
+                ctx.arc(0, 0, POINTER_HEIGHT / 2, -Math.PI / 2, Math.PI / 2);
+                ctx.closePath();
+                ctx.fill();
+
+                // 3. Restaurar la matriz de transformación
+                ctx.restore();
+            }
+
+            function drawConfetti() { 
+                confetti.forEach(p => {
+                    ctx.fillStyle = p.color;
+                    ctx.globalAlpha = p.opacity;
+                    ctx.beginPath();
+                    ctx.fillRect(p.x, p.y, p.size, p.size);
+                    ctx.globalAlpha = 1;
+                });
+            }
+
+            function updateConfetti() { 
+                for (let i = confetti.length - 1; i >= 0; i--) {
+                    const p = confetti[i];
+                    p.x += p.vx;
+                    p.y += p.vy;
+                    p.vy += 0.1;
+                    p.opacity -= 0.01;
+                    if (p.opacity <= 0) {
+                        confetti.splice(i, 1);
+                    }
+                }
+            }
+
+
+            function updateWinnersList() { 
+                winnersList.innerHTML = '';
+                winners.forEach(winner => {
+                    const winnerItem = document.createElement('div');
+                    winnerItem.className = 'winner-item';
+                    winnerItem.textContent = winner;
+                    winnersList.appendChild(winnerItem);
+                    setTimeout(() => {
+                        winnerItem.classList.add('show');
+                    }, 10);
+                });
+
+                localStorage.setItem('raffleWinners', JSON.stringify(winners));
+            }
+
+            function getCurrentSegmentIndex() {
+                const segmentAngleInDegrees = 360 / participants.length;
+                const currentRotationInDegrees = currentRotation % 360;
+                
+                const adjustedAngle = (360 - currentRotationInDegrees) % 360;
+                
+                return Math.floor(adjustedAngle / segmentAngleInDegrees) % participants.length;
+            }
+
+            function animateRoulette() {
+                const currentSegmentIndex = getCurrentSegmentIndex();
+                
+                // Lógica de Animación de Pivote del Puntero (rotación)
+                if (currentSegmentIndex !== lastSegmentIndex && isSpinning) {
+                    if (!isSlowSpin) { 
+                        playClickSound();
+                    }
+                    lastSegmentIndex = currentSegmentIndex;
+                    // Aplica rotación NEGATIVA (hacia arriba) para simular que es empujado
+                    pointerRotation = -MAX_ROTATION_MAGNITUDE; 
+                }
+                
+                // Regreso del puntero (simulación de resorte)
+                if (pointerRotation < 0) {
+                    pointerRotation += ROTATION_SPRING;
+                    if (pointerRotation > 0) pointerRotation = 0; 
+                }
+                // Fin Lógica de Animación de Pivote
+
+                if (participants.length > 0) {
+                    const currentParticipant = participants[currentSegmentIndex];
+                    currentWinnerDiv.textContent = currentParticipant;
+                }
+
+                if (isSlowSpin) {
+                    currentRotation += 0.25;
+                    drawRoulette();
+                    animationId = requestAnimationFrame(animateRoulette);
+                    return;
+                }
+
+
+                // --- Lógica de Frenado Acelerado ---
+                const diff = targetRotation - currentRotation;
+                
+                if (Math.abs(diff) < 0.1) {
+                    currentRotation = targetRotation;
+                    drawRoulette();
+                    cancelAnimationFrame(animationId);
+                    
+                    // Asegura que el puntero regrese a 0 al detenerse
+                    pointerRotation = 0; 
+                    
+                    const finalSegmentIndex = getCurrentSegmentIndex();
+                    
+                    setTimeout(() => {
+                        if (participants[finalSegmentIndex]) {
+                            const winner = participants[finalSegmentIndex];
+                            currentWinnerDiv.textContent = winner;
+                            currentWinnerDiv.className = 'current-winner winner-final';
+                            
+                            previousWinner = winner;
+                            winnerSound.play();
+                            launchConfetti();
+                        }
+
+                        isSpinning = false;
+                    }, 500);
+
+                    return;
+                }
+
+                const decelerationFactor = 0.08; 
+                currentRotation += diff * decelerationFactor;
+                // --- FIN Lógica de Frenado ---
+
+                drawRoulette();
+                animationId = requestAnimationFrame(animateRoulette);
+            }
+
+            function launchConfetti() { 
+                const centerX = canvas.width / 2;
+                const centerY = canvas.height / 2;
+
+                confetti = [];
+                for (let i = 0; i < NUM_CONFETTI; i++) {
+                    const angle = Math.random() * Math.PI * 2;
+                    const speed = Math.random() * 8 + 6;
+                    confetti.push({
+                        x: centerX,
+                        y: centerY,
+                        vx: Math.cos(angle) * speed,
+                        vy: Math.sin(angle) * speed,
+                        color: CONFETTI_COLORS[Math.floor(Math.random() * CONFETTI_COLORS.length)],
+                        size: Math.random() * 8 + 4,
+                        opacity: 1
+                    });
+                }
+                animateConfetti();
+            }
+
+            function animateConfetti() { 
+                if (confetti.length > 0) {
+                    updateConfetti();
+                    drawRoulette();
+                    requestAnimationFrame(animateConfetti);
+                }
+            }
+
+
+            function spinRoulette(isSlowSpinMode = false) {
+                if (isSpinning || participants.length === 0) return;
+
+                if (previousWinner) { 
+                    winners.unshift(previousWinner);
+                    updateWinnersList();
+
+                    if (!allowRepeat) {
+                        const indexToRemove = participants.indexOf(previousWinner);
+                        if (indexToRemove > -1) {
+                            participants.splice(indexToRemove, 1);
+                        }
+                        drawRoulette();
+                        updateParticipantsCount();
+                    }
+                    previousWinner = null;
+                }
+                
+                if (participants.length === 0) {
+                    drawRoulette();
+                    return;
+                }
+
+                isSpinning = true;
+                isSlowSpin = isSlowSpinMode;
+                currentWinnerDiv.className = 'current-winner';
+                currentWinnerDiv.textContent = '';
+                
+                if (isSlowSpin) {
+                    if (animationId) {
+                        cancelAnimationFrame(animationId);
+                    }
+                    animateRoulette();
+                    return;
+                }
+
+                const vueltas = Math.floor(Math.random() * 6) + 6; 
+                const gradosVueltas = vueltas * 360;
+
+                const randomAngle = Math.random() * 360;
+                const segmentAngleInDegrees = 360 / participants.length;
+                const finalSegmentIndex = Math.floor(randomAngle / segmentAngleInDegrees);
+                
+                // Calcula la rotación para que el CENTRO DEL SEGMENTO caiga en el puntero (0 grados).
+                const angleToCenterOfWinnerSegment = finalSegmentIndex * segmentAngleInDegrees + segmentAngleInDegrees / 2;
+                
+                const rotationNeeded = 360 - angleToCenterOfWinnerSegment;
+
+                targetRotation = currentRotation + gradosVueltas + rotationNeeded;
+
+                if (animationId) {
+                    cancelAnimationFrame(animationId);
+                }
+                animateRoulette();
+            }
+
+            function checkForStartSignal() {
+                const raffleStartSignal = localStorage.getItem('raffleStart') === 'true';
+                const slowSpinSignal = localStorage.getItem('slowSpin') === 'true';
+
+                if (raffleStartSignal) {
+                    localStorage.removeItem('raffleStart');
+                    if (isSlowSpin || isSpinning) {
+                        isSlowSpin = false;
+                        isSpinning = false;
+                        if (animationId) {
+                            cancelAnimationFrame(animationId);
+                        }
+                    }
+                    spinRoulette();
+                } else if (slowSpinSignal) {
+                    localStorage.removeItem('slowSpin');
+                    spinRoulette(true);
+                }
+            }
+
+            window.addEventListener('resize', function() {
+                setupCanvas();
+            });
+
+            window.addEventListener('storage', (event) => {
+                if (event.key === 'raffleParticipants' || event.key === 'raffleWinners') {
+                    loadParticipantsAndWinners();
+                    if (event.key === 'raffleParticipants' && event.newValue === '[]') {
+                        currentWinnerDiv.className = 'current-winner';
+                        currentWinnerDiv.textContent = 'Sorteo reseteado';
+                    }
+                }
+            });
+
+            loadParticipantsAndWinners();
+            setInterval(checkForStartSignal, 500);
+        });
+    </script>
+</body>
+</html>
