@@ -31,532 +31,436 @@
             margin-bottom: 5px;
             color: #fdbb2d;
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-            font-size: 28px;
         }
-        #participants-count-control {
-            text-align: center;
-            margin-bottom: 20px;
-            font-size: 18px;
-            color: #ccc;
+        h2 {
+            margin-top: 30px;
+            border-bottom: 2px solid #fdbb2d;
+            padding-bottom: 5px;
         }
         .form-group {
             margin-bottom: 15px;
         }
         label {
             display: block;
-            margin-bottom: 8px;
+            margin-bottom: 5px;
             font-weight: bold;
-            color: #ccc;
         }
         textarea {
             width: 100%;
-            height: 200px;
-            padding: 12px;
-            box-sizing: border-box;
-            border-radius: 8px;
-            border: 1px solid #555;
-            background: #333;
-            color: white;
-            font-size: 16px;
-            resize: vertical;
-        }
-        .file-input {
-            margin: 15px 0;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        .file-input input[type="file"] {
-            display: none;
-        }
-        .file-input label {
-            background: #4a5a70;
-            color: white;
-            padding: 10px 15px;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: background 0.3s;
-            font-weight: normal;
-            flex-grow: 1;
-            text-align: center;
-        }
-        .file-input label:hover {
-            background: #5c6d83;
-        }
-        .checkbox-group {
-            display: flex;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-        .checkbox-group input {
-            margin-right: 10px;
-            transform: scale(1.2);
-        }
-        .button-group {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin-top: 25px;
-        }
-        .btn {
-            background: #1e90ff;
-            color: white;
-            border: none;
-            padding: 15px 10px;
-            border-radius: 10px;
-            cursor: pointer;
-            font-size: 16px;
-            font-weight: bold;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-        }
-        .btn:hover {
-            transform: translateY(-2px);
-            background: #1c7ed6;
-        }
-        .btn.slow-spin {
-            background: #f1c40f;
-            color: black;
-        }
-        .btn.slow-spin:hover {
-            background: #f39c12;
-        }
-        .btn.reset {
-            background: #ff4757;
-        }
-        .btn.reset:hover {
-            background: #e63946;
-        }
-        .btn.delete {
-            background: #800000;
-        }
-        .btn.delete:hover {
-            background: #660000;
-        }
-        .btn.deduplicate {
-            background: #2ecc71;
-        }
-        .btn.deduplicate:hover {
-            background: #27ae60;
-        }
-        .status {
-            text-align: center;
-            margin-top: 20px;
             padding: 10px;
-            border-radius: 8px;
-            font-weight: bold;
-            opacity: 0;
-            transition: opacity 0.5s ease;
-        }
-        .status.success {
-            background: #2ed573;
-            opacity: 1;
-        }
-        .status.error {
-            background: #ff6b6b;
-            opacity: 1;
-        }
-        .section-title {
-            font-size: 20px;
-            font-weight: bold;
-            margin-top: 30px;
-            margin-bottom: 15px;
-            color: #fdbb2d;
-            text-align: center;
-        }
-        .list-management-panel {
-            background: rgba(255, 255, 255, 0.1);
-            padding: 20px;
-            border-radius: 10px;
-            margin-top: 20px;
-        }
-        .list-management-panel .form-group {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            flex-wrap: wrap; /* Permite que los elementos se envuelvan en pantallas pequeñas */
-        }
-        .list-management-panel .form-group button {
-            width: auto;
-            flex-grow: 1;
-            padding: 10px 15px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            background: #222;
+            color: white;
+            box-sizing: border-box;
+            resize: vertical;
             font-size: 14px;
         }
-        .list-management-panel .form-group select {
-            flex-grow: 2;
-            padding: 10px;
-            border-radius: 8px;
-            border: 1px solid #555;
-            background: #333;
-            color: white;
-            font-size: 16px;
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s;
+            margin-right: 10px;
         }
-        /* Ajuste para el segundo form-group para una mejor distribución */
-        .list-management-panel .form-group:nth-child(2) > * {
+        #save-list-btn {
+            background-color: #2ed573;
+            color: white;
+        }
+        #save-list-btn:hover {
+            background-color: #1eab5c;
+        }
+        #delete-list-btn {
+            background-color: #eb3b5a;
+            color: white;
+        }
+        #delete-list-btn:hover {
+            background-color: #c02d46;
+        }
+        #download-json-btn {
+            background-color: #1e90ff;
+            color: white;
+            margin-top: 15px;
+            display: block;
+            width: 100%;
+        }
+        #download-json-btn:hover {
+            background-color: #146eb5;
+        }
+        .action-group {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+        .action-group button {
             flex-grow: 1;
-            min-width: 100px; /* Asegura que no se hagan demasiado pequeños */
+            margin: 5px;
+        }
+        #participants-count {
+            display: block;
+            margin-top: 5px;
+            font-size: 0.9em;
+            color: #fdbb2d;
+        }
+        .status {
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 15px;
+            text-align: center;
+        }
+        .status.success {
+            background-color: #2ed573;
+        }
+        .status.error {
+            background-color: #eb3b5a;
+        }
+        .controls-row {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        .controls-row select, .controls-row input[type="text"] {
+            flex-grow: 1;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            background: #222;
+            color: white;
+        }
+        .select-group {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        #list-name-input {
+            width: 100%;
+        }
+        .sync-info {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+        .sync-info p {
+            font-size: 0.9em;
+            margin: 5px 0;
+        }
+        #load-github-btn {
+            background-color: #3e4451;
+            color: white;
+        }
+        #load-github-btn:hover {
+            background-color: #2e3239;
+        }
+        .button-flex-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>🎲 Panel de Control de Sorteos</h1>
-        <p id="participants-count-control">Participantes: 0</p>
+        <h1>⚙️ Panel de Control de Sorteos</h1>
+
+        <div class="sync-info">
+            <h2>🔗 Sincronización con GitHub</h2>
+            <p>**Paso 1: URL de Sincronización**</p>
+            <p>Introduce la URL RAW de tu archivo JSON (e.g., `https://raw.githubusercontent.com/usuario/repo/branch/lists.json`):</p>
+            <div class="controls-row">
+                <input type="text" id="github-url" placeholder="URL Raw de GitHub Gist o Archivo JSON">
+                <button id="load-github-btn">Cargar</button>
+            </div>
+            <p>💡 Usa este archivo para sincronizar tus listas en todas partes.</p>
+        </div>
+
+        <h2>💾 Gestión de Listas</h2>
+        <div class="select-group">
+            <label for="list-selector">Lista Activa:</label>
+            <select id="list-selector"></select>
+            <input type="text" id="new-list-name-input" placeholder="Nombre de lista nueva">
+        </div>
         
         <div class="form-group">
-            <label for="participants">Participantes (uno por línea, máximo 500):</label>
-            <textarea id="participants" placeholder="Pega aquí los nombres de los participantes (uno por línea)..."></textarea>
+            <label for="participants-textarea">Participantes (uno por línea): <span id="participants-count"></span></label>
+            <textarea id="participants-textarea" rows="15"></textarea>
         </div>
         
-        <div class="file-input">
-            <label for="file-upload">📁 Cargar archivo de texto</label>
-            <input type="file" id="file-upload" accept=".txt">
+        <div class="action-group">
+            <button id="set-participants-btn">Usar en Sorteo</button>
+            <button id="save-list-btn">Guardar / Actualizar Lista</button>
+            <button id="delete-list-btn">Eliminar Lista</button>
         </div>
-        
-        <div class="checkbox-group">
-            <input type="checkbox" id="allow-repeat">
-            <label for="allow-repeat">Permitir que los ganadores vuelvan a participar</label>
-        </div>
-        
-        <div class="button-group">
-            <button class="btn" id="update-roulette">🔄 Actualizar Ruleta</button>
-            <button class="btn" id="start-raffle">🚀 Iniciar Sorteo</button>
-            <button class="btn slow-spin" id="slow-spin">🔄 Giro Lento</button>
-            <button class="btn deduplicate" id="deduplicate-btn">🧹 Eliminar Duplicados</button>
-            <button class="btn reset" id="reset-raffle">🗑️ Resetear Ganadores</button>
-            <button class="btn delete" id="delete-participants">🗑️ Borrar Participantes</button>
-        </div>
-        
-        <div id="status" class="status"></div>
 
-        <hr>
+        <div class="form-group">
+            <label>Opciones del Sorteo:</label>
+            <div>
+                <input type="checkbox" id="allow-repeat-checkbox">
+                <label for="allow-repeat-checkbox" style="display: inline;">Permitir que un ganador sea elegido de nuevo</label>
+            </div>
+        </div>
 
-        <div class="section-title">Gestionar Listas</div>
-        <div class="list-management-panel">
-            <div class="form-group">
-                <input type="text" id="list-name-input" placeholder="Nombre de la lista">
-                <button class="btn" id="save-list-btn">Guardar Lista</button>
-            </div>
-            <div class="form-group">
-                <select id="saved-lists-select"></select>
-                <button class="btn" id="load-list-btn">Cargar Lista</button>
-                <button class="btn delete" id="delete-list-btn">Eliminar Lista</button>
-                <button class="btn deduplicate" id="edit-list-btn">Editar Lista</button>
-            </div>
+        <div class="button-flex-group">
+            <button id="start-spin-btn" style="background-color: #f39c12;">Iniciar Giro Rápido</button>
+            <button id="slow-spin-btn" style="background-color: #c0392b;">Girar Lentamente</button>
+        </div>
+        
+        <div class="form-group">
+            <button id="reset-winners-btn" style="background-color: #7f8c8d; width: 100%; margin-top: 15px;">Limpiar Ganadores</button>
+        </div>
+        
+        <div class="status" id="status-message"></div>
+        
+        <div class="sync-info">
+            <p>**Paso 2: Descargar para Sincronizar**</p>
+            <button id="download-json-btn">⬇️ Descargar Archivo `lists.json`</button>
+            <p>**Paso 3: Subir a GitHub**</p>
+            <p>Sube el archivo descargado a tu repositorio de GitHub para que todos tus dispositivos accedan a la versión actualizada.</p>
         </div>
     </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const participantsTextarea = document.getElementById('participants');
-            const fileUpload = document.getElementById('file-upload');
-            const allowRepeatCheckbox = document.getElementById('allow-repeat');
-            const updateRouletteBtn = document.getElementById('update-roulette');
-            const startRaffleBtn = document.getElementById('start-raffle');
-            const slowSpinBtn = document.getElementById('slow-spin');
-            const resetRaffleBtn = document.getElementById('reset-raffle');
-            const deleteParticipantsBtn = document.getElementById('delete-participants');
-            const deduplicateBtn = document.getElementById('deduplicate-btn');
-            const statusDiv = document.getElementById('status');
-            const participantsCountControl = document.getElementById('participants-count-control');
-
-            const listNameInput = document.getElementById('list-name-input');
+            const participantsTextarea = document.getElementById('participants-textarea');
+            const setParticipantsBtn = document.getElementById('set-participants-btn');
             const saveListBtn = document.getElementById('save-list-btn');
-            const savedListsSelect = document.getElementById('saved-lists-select');
-            const loadListBtn = document.getElementById('load-list-btn');
-            const deleteListBtn = document.getElementById('delete-list-btn'); // NUEVA VARIABLE
-            const editListBtn = document.getElementById('edit-list-btn');   // NUEVA VARIABLE
-            
-            const MAX_PARTICIPANTS = 500;
-            
-            fileUpload.addEventListener('change', function(e) {
-                const file = e.target.files[0];
-                if (file) {
-                    const reader = new FileReader();
-                    reader.onload = function(event) {
-                        participantsTextarea.value = event.target.result;
-                        showStatus('¡Archivo cargado correctamente!', 'success');
-                        updateRoulette();
-                    };
-                    reader.readAsText(file);
-                }
-            });
-            
-            function updateParticipantsCount() {
-                const participantsText = participantsTextarea.value.trim();
-                const participants = participantsText.split('\n')
-                    .map(name => name.trim())
-                    .filter(name => name.length > 0);
-                participantsCountControl.textContent = `Participantes: ${participants.length}`;
-            }
+            const deleteListBtn = document.getElementById('delete-list-btn');
+            const startSpinBtn = document.getElementById('start-spin-btn');
+            const slowSpinBtn = document.getElementById('slow-spin-btn');
+            const resetWinnersBtn = document.getElementById('reset-winners-btn');
+            const allowRepeatCheckbox = document.getElementById('allow-repeat-checkbox');
+            const statusDiv = document.getElementById('status-message');
+            const participantsCountSpan = document.getElementById('participants-count');
+            const listSelector = document.getElementById('list-selector');
+            const newListInput = document.getElementById('new-list-name-input');
+            const githubUrlInput = document.getElementById('github-url');
+            const loadGithubBtn = document.getElementById('load-github-btn');
+            const downloadJsonBtn = document.getElementById('download-json-btn');
 
-            function updateRoulette() {
-                const participantsText = participantsTextarea.value.trim();
-                
-                if (!participantsText) {
-                    localStorage.setItem('raffleParticipants', JSON.stringify([]));
-                    updateParticipantsCount();
-                    return false;
-                }
-                
-                const participants = participantsText.split('\n')
-                    .map(name => name.trim())
-                    .filter(name => name.length > 0);
-                
-                if (participants.length === 0) {
-                    localStorage.setItem('raffleParticipants', JSON.stringify([]));
-                    updateParticipantsCount();
-                    return false; // Retorna falso si no hay nombres válidos
-                }
-                
-                if (participants.length > MAX_PARTICIPANTS) {
-                    showStatus(`Error: Máximo ${MAX_PARTICIPANTS} participantes permitidos`, 'error');
-                    return false;
-                }
-                
-                const allowRepeat = allowRepeatCheckbox.checked;
-                
-                localStorage.setItem('raffleParticipants', JSON.stringify(participants));
-                localStorage.setItem('raffleAllowRepeat', allowRepeat);
-                updateParticipantsCount();
-                
-                return true;
-            }
+            let allLists = {}; // Estructura: { 'nombreLista': ['Participante A', 'Participante B'] }
+            const DEFAULT_LIST_NAME = 'Lista Principal';
 
-            updateRouletteBtn.addEventListener('click', function() {
-                if(updateRoulette()){
-                    showStatus('¡Ruleta actualizada correctamente!', 'success');
-                }
-            });
-            
-            // CORRECCIÓN CRÍTICA: Verifica participantes y limpia la señal opuesta antes de iniciar
-            startRaffleBtn.addEventListener('click', function() {
-                const updateSuccess = updateRoulette();
-                
-                if (!updateSuccess) {
-                    const participantsText = participantsTextarea.value.trim();
-                    const participants = participantsText.split('\n')
-                        .map(name => name.trim())
-                        .filter(name => name.length > 0);
+            // --- Funciones de Utilidad ---
 
-                    if (participants.length === 0) {
-                        showStatus('Error: Debes añadir participantes en la lista antes de sortear.', 'error');
-                    }
-                    return;
-                }
-                
-                // Si la actualización fue exitosa, enviamos la señal
-                localStorage.removeItem('slowSpin'); 
-                localStorage.setItem('raffleStart', 'true');
-                showStatus('¡Sorteo iniciado! Revisa la pantalla de sorteo.', 'success');
-            });
-
-            // CORRECCIÓN: Limpiar 'raffleStart' al iniciar el giro lento.
-            slowSpinBtn.addEventListener('click', function() {
-                if(updateRoulette()){
-                    localStorage.removeItem('raffleStart');
-                    localStorage.setItem('slowSpin', 'true');
-                    showStatus('¡Giro lento iniciado! Revisa la pantalla de sorteo.', 'success');
-                }
-            });
-            
-            resetRaffleBtn.addEventListener('click', function() {
-                if (confirm('¿Estás seguro de resetear el sorteo? Se eliminarán todos los ganadores.')) {
-                    localStorage.setItem('raffleWinners', JSON.stringify([]));
-                    showStatus('Sorteo reseteado correctamente', 'success');
-                }
-            });
-            
-            deleteParticipantsBtn.addEventListener('click', function() {
-                if (confirm('¿Estás seguro de borrar todos los participantes? Esta acción no se puede deshacer.')) {
-                    participantsTextarea.value = '';
-                    localStorage.setItem('raffleParticipants', JSON.stringify([]));
-                    localStorage.setItem('raffleWinners', JSON.stringify([]));
-                    updateParticipantsCount();
-                    showStatus('Participantes borrados correctamente.', 'success');
-                }
-            });
-            
-            deduplicateBtn.addEventListener('click', function() {
-                const participantsText = participantsTextarea.value.trim();
-                if (!participantsText) {
-                    showStatus('La lista de participantes está vacía.', 'error');
-                    return;
-                }
-                
-                const participants = participantsText.split('\n')
-                    .map(name => name.trim())
-                    .filter(name => name.length > 0);
-                
-                const uniqueParticipants = [...new Set(participants)];
-                
-                if (uniqueParticipants.length === participants.length) {
-                    showStatus('No se encontraron participantes duplicados.', 'success');
-                    return;
-                }
-                
-                participantsTextarea.value = uniqueParticipants.join('\n');
-                updateRoulette();
-                showStatus(`Se eliminaron ${participants.length - uniqueParticipants.length} duplicados.`, 'success');
-            });
-
-            function loadSavedLists() {
-                savedListsSelect.innerHTML = '';
-                const savedLists = JSON.parse(localStorage.getItem('raffleSavedLists') || '{}');
-                
-                if (Object.keys(savedLists).length === 0) {
-                    const option = document.createElement('option');
-                    option.textContent = 'No hay listas guardadas';
-                    option.disabled = true;
-                    savedListsSelect.appendChild(option);
-                    loadListBtn.disabled = true;
-                    deleteListBtn.disabled = true; // Deshabilita el botón si no hay listas
-                    editListBtn.disabled = true;   // Deshabilita el botón si no hay listas
-                } else {
-                    loadListBtn.disabled = false;
-                    deleteListBtn.disabled = false; // Habilita el botón
-                    editListBtn.disabled = false;   // Habilita el botón
-                    for (const name in savedLists) {
-                        const option = document.createElement('option');
-                        option.value = name;
-                        option.textContent = name;
-                        savedListsSelect.appendChild(option);
-                    }
-                }
-            }
-            
-            saveListBtn.addEventListener('click', function() {
-                const listName = listNameInput.value.trim();
-                const participants = participantsTextarea.value.split('\n').map(p => p.trim()).filter(p => p.length > 0);
-
-                if (!listName) {
-                    showStatus('Error: Debes ingresar un nombre para la lista', 'error');
-                    return;
-                }
-
-                if (participants.length === 0) {
-                    showStatus('Error: La lista de participantes no puede estar vacía para ser guardada', 'error');
-                    return;
-                }
-
-                const savedLists = JSON.parse(localStorage.getItem('raffleSavedLists') || '{}');
-                savedLists[listName] = participants;
-                localStorage.setItem('raffleSavedLists', JSON.stringify(savedLists));
-                
-                loadSavedLists();
-                showStatus(`Lista "${listName}" guardada correctamente`, 'success');
-                listNameInput.value = '';
-            });
-
-            loadListBtn.addEventListener('click', function() {
-                const listName = savedListsSelect.value;
-                if (!listName) {
-                    showStatus('Error: No hay una lista seleccionada', 'error');
-                    return;
-                }
-                
-                if (confirm(`¿Estás seguro de cargar la lista "${listName}"? Se reemplazará la lista actual.`)) {
-                    const savedLists = JSON.parse(localStorage.getItem('raffleSavedLists') || '{}');
-                    const participants = savedLists[listName];
-                    
-                    if (participants) {
-                        participantsTextarea.value = participants.join('\n');
-                        localStorage.setItem('raffleParticipants', JSON.stringify(participants));
-                        updateParticipantsCount();
-                        showStatus(`Lista "${listName}" cargada correctamente`, 'success');
-                    } else {
-                        showStatus('Error: La lista seleccionada no se encontró', 'error');
-                    }
-                }
-            });
-
-            // Lógica para ELIMINAR LISTA
-            deleteListBtn.addEventListener('click', function() {
-                const listName = savedListsSelect.value;
-                if (!listName) {
-                    showStatus('Error: No hay una lista seleccionada para eliminar', 'error');
-                    return;
-                }
-                
-                if (confirm(`¿Estás seguro de ELIMINAR la lista "${listName}"? Esta acción no se puede deshacer.`)) {
-                    const savedLists = JSON.parse(localStorage.getItem('raffleSavedLists') || '{}');
-                    
-                    if (savedLists[listName]) {
-                        delete savedLists[listName]; // Elimina la propiedad del objeto
-                        localStorage.setItem('raffleSavedLists', JSON.stringify(savedLists));
-                        
-                        loadSavedLists();
-                        // Intentar re-cargar la lista principal si la eliminada era la que estaba en el textarea (opcional, pero buena práctica)
-                        updateRoulette(); 
-                        showStatus(`Lista "${listName}" eliminada correctamente`, 'success');
-                    } else {
-                        showStatus('Error: La lista seleccionada no se encontró', 'error');
-                    }
-                }
-            });
-
-            // Lógica para EDITAR/SOBRESCRIBIR LISTA
-            editListBtn.addEventListener('click', function() {
-                const listName = savedListsSelect.value;
-                const participants = participantsTextarea.value.split('\n').map(p => p.trim()).filter(p => p.length > 0);
-
-                if (!listName) {
-                    showStatus('Error: No hay una lista seleccionada para editar', 'error');
-                    return;
-                }
-                
-                if (participants.length === 0) {
-                    showStatus('Error: La lista de participantes actual no puede estar vacía para editar', 'error');
-                    return;
-                }
-                
-                if (confirm(`¿Estás seguro de EDITAR/SOBRESCRIBIR la lista "${listName}" con los participantes actuales?`)) {
-                    const savedLists = JSON.parse(localStorage.getItem('raffleSavedLists') || '{}');
-                    
-                    if (savedLists[listName]) {
-                        // Sobrescribe la lista existente con los participantes actuales
-                        savedLists[listName] = participants; 
-                        localStorage.setItem('raffleSavedLists', JSON.stringify(savedLists));
-                        
-                        showStatus(`Lista "${listName}" editada/sobrescrita correctamente`, 'success');
-                    } else {
-                        showStatus('Error: La lista seleccionada no se encontró', 'error');
-                    }
-                }
-            });
-            
-            function showStatus(message, type) {
+            function showStatus(message, type = 'success') {
                 statusDiv.textContent = message;
                 statusDiv.className = `status ${type}`;
-                
                 setTimeout(() => {
                     statusDiv.textContent = '';
                     statusDiv.className = 'status';
                 }, 5000);
             }
 
+            function updateParticipantsCount() {
+                const count = participantsTextarea.value.split('\n').filter(line => line.trim() !== '').length;
+                participantsCountSpan.textContent = `(${count} participantes)`;
+            }
+
+            // --- Carga y Sincronización ---
+
             function loadSettings() {
-                const savedParticipants = localStorage.getItem('raffleParticipants');
-                if (savedParticipants) {
-                    try {
-                        const parsedParticipants = JSON.parse(savedParticipants);
-                        if (Array.isArray(parsedParticipants)) {
-                            participantsTextarea.value = parsedParticipants.join('\n');
-                        }
-                    } catch (e) {
-                        console.error('Error al parsear participantes del localStorage:', e);
-                        participantsTextarea.value = '';
-                    }
-                }
                 const savedAllowRepeat = localStorage.getItem('raffleAllowRepeat');
                 if (savedAllowRepeat) {
                     allowRepeatCheckbox.checked = savedAllowRepeat === 'true';
                 }
-                updateParticipantsCount();
+                const savedUrl = localStorage.getItem('githubUrl');
+                if (savedUrl) {
+                    githubUrlInput.value = savedUrl;
+                }
+                loadSavedLists();
             }
+
+            function loadSavedLists() {
+                const savedLists = localStorage.getItem('raffleAllLists');
+                if (savedLists) {
+                    try {
+                        allLists = JSON.parse(savedLists);
+                        if (Object.keys(allLists).length === 0) {
+                            allLists[DEFAULT_LIST_NAME] = [];
+                        }
+                    } catch (e) {
+                        console.error('Error al parsear listas:', e);
+                        allLists = { [DEFAULT_LIST_NAME]: [] };
+                    }
+                } else {
+                    allLists = { [DEFAULT_LIST_NAME]: [] };
+                }
+                updateListSelector();
+                loadList(localStorage.getItem('activeListName') || DEFAULT_LIST_NAME);
+            }
+
+            function updateListSelector() {
+                listSelector.innerHTML = '';
+                const currentActiveList = localStorage.getItem('activeListName') || DEFAULT_LIST_NAME;
+                let foundActive = false;
+
+                Object.keys(allLists).forEach(listName => {
+                    const option = document.createElement('option');
+                    option.value = listName;
+                    option.textContent = listName;
+                    listSelector.appendChild(option);
+                    if (listName === currentActiveList) {
+                        foundActive = true;
+                    }
+                });
+
+                if (foundActive) {
+                    listSelector.value = currentActiveList;
+                } else if (listSelector.options.length > 0) {
+                    listSelector.value = listSelector.options[0].value;
+                    localStorage.setItem('activeListName', listSelector.value);
+                }
+            }
+
+            function loadList(listName) {
+                if (allLists[listName]) {
+                    const participants = allLists[listName];
+                    participantsTextarea.value = participants.join('\n');
+                    localStorage.setItem('activeListName', listName);
+                    updateParticipantsCount();
+                } else if (Object.keys(allLists).length > 0) {
+                    loadList(Object.keys(allLists)[0]);
+                } else {
+                    participantsTextarea.value = '';
+                    updateParticipantsCount();
+                }
+            }
+
+            // --- Event Listeners ---
+
+            participantsTextarea.addEventListener('input', updateParticipantsCount);
+
+            listSelector.addEventListener('change', function() {
+                loadList(listSelector.value);
+            });
+
+            saveListBtn.addEventListener('click', function() {
+                const participantsArray = participantsTextarea.value.split('\n').map(line => line.trim()).filter(line => line.length > 0);
+                let listName = newListInput.value.trim() || listSelector.value;
+                
+                if (!listName) {
+                    showStatus('Introduce un nombre para la lista o selecciona una existente.', 'error');
+                    return;
+                }
+
+                allLists[listName] = participantsArray;
+                localStorage.setItem('raffleAllLists', JSON.stringify(allLists));
+                localStorage.setItem('activeListName', listName);
+                newListInput.value = ''; // Limpiar el input después de guardar
+                
+                updateListSelector();
+                loadList(listName); // Recargar para asegurar que la lista activa esté bien.
+
+                showStatus(`Lista "${listName}" guardada con ${participantsArray.length} participantes.`);
+            });
+
+            deleteListBtn.addEventListener('click', function() {
+                const listName = listSelector.value;
+                if (listName && confirm(`¿Estás seguro de que quieres eliminar la lista "${listName}"?`)) {
+                    delete allLists[listName];
+                    localStorage.setItem('raffleAllLists', JSON.stringify(allLists));
+                    
+                    if (Object.keys(allLists).length === 0) {
+                        allLists = { [DEFAULT_LIST_NAME]: [] };
+                    }
+                    
+                    updateListSelector();
+                    loadList(Object.keys(allLists)[0]); 
+                    showStatus(`Lista "${listName}" eliminada.`, 'success');
+                }
+            });
+
+            setParticipantsBtn.addEventListener('click', function() {
+                const participantsArray = participantsTextarea.value.split('\n').map(line => line.trim()).filter(line => line.length > 0);
+                
+                if (participantsArray.length === 0) {
+                    showStatus('La lista no puede estar vacía.', 'error');
+                    return;
+                }
+
+                // Guardar la lista activa actual para persistencia local.
+                const activeListName = listSelector.value;
+                allLists[activeListName] = participantsArray;
+                localStorage.setItem('raffleAllLists', JSON.stringify(allLists));
+
+                // Configurar la lista que usará la pantalla del sorteo.
+                localStorage.setItem('raffleParticipants', JSON.stringify(participantsArray));
+                localStorage.setItem('raffleAllowRepeat', allowRepeatCheckbox.checked);
+                
+                showStatus(`Lista activa y ajustes guardados para la pantalla del sorteo.`, 'success');
+            });
             
+            // --- Sincronización y Acciones de Sorteo ---
+
+            loadGithubBtn.addEventListener('click', function() {
+                const url = githubUrlInput.value.trim();
+                if (!url) {
+                    showStatus('Por favor, introduce una URL válida de GitHub.', 'error');
+                    return;
+                }
+                
+                localStorage.setItem('githubUrl', url);
+                
+                fetch(url)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Error al cargar la URL. Verifica la URL RAW del archivo.');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        if (typeof data === 'object' && Object.keys(data).length > 0) {
+                            allLists = data;
+                            localStorage.setItem('raffleAllLists', JSON.stringify(allLists));
+                            updateListSelector();
+                            loadList(Object.keys(allLists)[0]);
+                            showStatus(`¡Listas cargadas exitosamente desde GitHub! ${Object.keys(data).length} listas encontradas.`, 'success');
+                        } else {
+                            showStatus('El archivo cargado está vacío o no tiene el formato JSON de listas esperado.', 'error');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Fetch error:', error);
+                        showStatus(`Error de carga: ${error.message}`, 'error');
+                    });
+            });
+
+            downloadJsonBtn.addEventListener('click', function() {
+                const jsonData = JSON.stringify(allLists, null, 2);
+                const blob = new Blob([jsonData], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'lists.json';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                showStatus('Archivo lists.json descargado. ¡Súbelo a GitHub para sincronizar!', 'success');
+            });
+            
+            startSpinBtn.addEventListener('click', function() {
+                localStorage.setItem('raffleStart', 'true');
+            });
+
+            slowSpinBtn.addEventListener('click', function() {
+                localStorage.setItem('slowSpin', 'true');
+            });
+
+            resetWinnersBtn.addEventListener('click', function() {
+                if (confirm('¿Estás seguro de que quieres limpiar la lista de ganadores y restablecer el sorteo?')) {
+                    localStorage.removeItem('raffleWinners');
+                    localStorage.removeItem('raffleParticipants'); // Esto forzará a la pantalla del sorteo a recargar la lista activa.
+                    showStatus('Ganadores y lista de participantes limpiados. Recarga la pantalla de sorteo.', 'success');
+                }
+            });
+
+            // Inicialización
             loadSettings();
-            loadSavedLists();
         });
     </script>
 </body>
